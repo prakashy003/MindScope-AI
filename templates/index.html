@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MindScope AI - Mental Health Analysis</title>
+    <!-- Modern Google Font: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="dynamic-background"></div>
+
+<main class="glass-container">
+    <header>
+        <div class="logo-wrapper">
+            <svg class="brain-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2C8.68629 2 6 4.68629 6 8C6 9.3822 6.46781 10.655 7.25363 11.6661C6.46274 12.3925 5.92205 13.4111 5.92205 14.5C5.92205 16.9853 7.93677 19 10.4221 19C10.7413 19 11.0506 18.9649 11.3468 18.8996C11.8385 20.6698 13.4604 22 15.3529 22C17.562 22 19.3529 20.2091 19.3529 18C19.3529 17.587 19.2903 17.1884 19.1745 16.8143C20.6726 15.8697 21.6529 14.1802 21.6529 12.25C21.6529 9.35051 19.3024 7 16.4029 7C16.3242 7 16.246 7.00173 16.1685 7.00516C15.5414 4.14811 14.0044 2 12 2Z" fill="url(#paint0_linear)"/>
+                <defs>
+                    <linearGradient id="paint0_linear" x1="6" y1="2" x2="21.6529" y2="22" gradientUnits="userSpaceOnUse">
+                        <stop stop-color="#4facfe"/>
+                        <stop offset="1" stop-color="#00f2fe"/>
+                    </linearGradient>
+                </defs>
+            </svg>
+            <h1>MindScope AI</h1>
+        </div>
+        <p>Real-time mental health text analysis powered by Transformer AI.</p>
+    </header>
+
+    <section class="analysis-section">
+        <label for="text-input">Express how you are feeling:</label>
+        <div class="textarea-wrapper">
+            <textarea id="text-input" rows="5" placeholder="I have been feeling really overwhelmed lately, and I just don't know how to handle everything..."></textarea>
+            <div class="char-count"><span id="char-current">0</span> / 512 max chars</div>
+        </div>
+        
+        <button id="analyze-btn">
+            <span class="btn-text">Analyze Text</span>
+            <div class="spinner hidden"></div>
+        </button>
+    </section>
+
+    <!-- Results Section -->
+    <section id="results-container" class="results-container hidden">
+        <div class="result-header">
+            <h2>Analysis Result</h2>
+            <div id="primary-prediction" class="primary-tag">-</div>
+        </div>
+        
+        <div class="confidence-meter">
+            <div class="confidence-label">
+                <span>Confidence Score</span>
+                <span id="primary-confidence-text">0%</span>
+            </div>
+            <div class="track">
+                <div id="confidence-fill" class="fill"></div>
+            </div>
+        </div>
+
+        <div class="detailed-scores">
+            <h3>Detailed Breakdown</h3>
+            <ul id="score-list" class="score-list">
+                <!-- Dynamically populated -->
+            </ul>
+        </div>
+        <div class="disclaimer">
+            * This AI tool is for research purposes. It does not replace professional medical advice, diagnosis, or treatment.
+        </div>
+    </section>
+
+</main>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const textInput = document.getElementById("text-input");
+        const analyzeBtn = document.getElementById("analyze-btn");
+        const resultsContainer = document.getElementById("results-container");
+        const btnText = analyzeBtn.querySelector(".btn-text");
+        const spinner = analyzeBtn.querySelector(".spinner");
+        const charCurrent = document.getElementById("char-current");
+        
+        // Character count update
+        textInput.addEventListener("input", () => {
+             charCurrent.textContent = textInput.value.length;
+        });
+
+        analyzeBtn.addEventListener("click", async () => {
+            const text = textInput.value.trim();
+            if (!text) {
+                alert("Please enter some text to analyze.");
+                return;
+            }
+
+            // UI Loading state
+            analyzeBtn.disabled = true;
+            btnText.textContent = "Analyzing...";
+            spinner.classList.remove("hidden");
+            resultsContainer.classList.add("hidden");
+            resultsContainer.classList.remove("fade-in");
+
+            try {
+                const response = await fetch("/predict", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ text })
+                });
+
+                if (!response.ok) {
+                    throw new Error("Failed to get prediction");
+                }
+
+                const data = await response.json();
+                
+                if (data.error) {
+                    alert("Error: " + data.error);
+                } else {
+                    displayResults(data);
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                alert("An error occurred during analysis. Please try again.");
+            } finally {
+                 // Reset UI loading state
+                 analyzeBtn.disabled = false;
+                 btnText.textContent = "Analyze Text";
+                 spinner.classList.add("hidden");
+            }
+        });
+
+        function displayResults(data) {
+            const predTag = document.getElementById("primary-prediction");
+            const confText = document.getElementById("primary-confidence-text");
+            const confFill = document.getElementById("confidence-fill");
+            const scoreList = document.getElementById("score-list");
+
+            // Setup primary result
+            predTag.textContent = data.prediction;
+            predTag.className = `primary-tag color-${data.prediction.toLowerCase().replace(' ', '-')}`;
+            
+            const confPercentage = (data.confidence * 100).toFixed(1);
+            confText.textContent = `${confPercentage}%`;
+            
+            // Animate fill bar
+            setTimeout(() => {
+                confFill.style.width = `${confPercentage}%`;
+                confFill.className = `fill fill-${data.prediction.toLowerCase().replace(' ', '-')}`;
+            }, 50);
+
+            // Populate all scores
+            scoreList.innerHTML = "";
+            data.all_scores.forEach(scoreKv => {
+                const label = scoreKv[0];
+                const score = (scoreKv[1] * 100).toFixed(1);
+                
+                const li = document.createElement("li");
+                li.innerHTML = `
+                    <span class="score-label">${label}</span>
+                    <div class="score-bar-wrapper">
+                        <div class="score-bar" style="width: ${score}%;"></div>
+                    </div>
+                    <span class="score-value">${score}%</span>
+                `;
+                scoreList.appendChild(li);
+            });
+
+            // Reveal results
+            resultsContainer.classList.remove("hidden");
+            // small delay for css transition to catch the display:block change
+            requestAnimationFrame(() => {
+                resultsContainer.classList.add("fade-in");
+            });
+        }
+    });
+</script>
+
+</body>
+</html>

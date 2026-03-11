@@ -1,0 +1,334 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    color: #fff;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow-x: hidden;
+    position: relative;
+    background-color: #0b0f19;
+}
+
+.dynamic-background {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    z-index: -1;
+    background: radial-gradient(circle at top right, #1f2937, #0b0f19), 
+                radial-gradient(circle at bottom left, #1e3a8a, transparent);
+    background-size: 200% 200%;
+    animation: gradientMove 15s ease infinite alternate;
+}
+
+@keyframes gradientMove {
+    0% { background-position: 0% 0%; }
+    100% { background-position: 100% 100%; }
+}
+
+.glass-container {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 24px;
+    padding: 40px;
+    width: 90%;
+    max-width: 650px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+    z-index: 10;
+    margin: 20px;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.logo-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.brain-icon {
+    width: 36px;
+    height: 36px;
+    animation: float 3s ease-in-out infinite alternate;
+}
+
+@keyframes float {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-5px); }
+}
+
+h1 {
+    font-weight: 700;
+    font-size: 2.2rem;
+    background: linear-gradient(to right, #4facfe, #00f2fe);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+header p {
+    color: #a1a1aa;
+    font-size: 0.95rem;
+}
+
+.analysis-section {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+label {
+    font-weight: 500;
+    font-size: 1rem;
+    color: #e4e4e7;
+}
+
+.textarea-wrapper {
+    position: relative;
+}
+
+textarea {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 12px;
+    padding: 16px;
+    color: #fff;
+    font-family: inherit;
+    font-size: 1rem;
+    resize: vertical;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+textarea:focus {
+    border-color: #4facfe;
+    background: rgba(0, 0, 0, 0.3);
+    box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.3);
+}
+
+textarea::placeholder {
+    color: #6366f1;
+    opacity: 0.5;
+}
+
+.char-count {
+    position: absolute;
+    bottom: -20px;
+    right: 5px;
+    font-size: 0.75rem;
+    color: #a1a1aa;
+}
+
+button {
+    margin-top: 10px;
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    color: #000;
+    border: none;
+    padding: 14px 24px;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(79, 172, 254, 0.4);
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.spinner {
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(0,0,0,0.3);
+    border-top-color: #000;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin { 
+    to { transform: rotate(360deg); } 
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Results Section */
+.results-container {
+    margin-top: 30px;
+    padding-top: 30px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.results-container.fade-in {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.result-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+}
+
+.result-header h2 {
+    font-size: 1.3rem;
+    font-weight: 600;
+}
+
+.primary-tag {
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    background: rgba(255,255,255,0.1);
+}
+
+/* Dynamic Colors for Tags */
+.color-normal { background: rgba(34, 197, 94, 0.2); color: #4ade80; border: 1px solid rgba(34,197,94,0.3); }
+.color-depression { background: rgba(59, 130, 246, 0.2); color: #60a5fa; border: 1px solid rgba(59,130,246,0.3); }
+.color-suicidal { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239,68,68,0.3); }
+.color-anxiety { background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid rgba(245,158,11,0.3); }
+.color-bipolar { background: rgba(168, 85, 247, 0.2); color: #c084fc; border: 1px solid rgba(168,85,247,0.3); }
+.color-stress { background: rgba(236, 72, 153, 0.2); color: #f472b6; border: 1px solid rgba(236,72,153,0.3); }
+.color-personality-disorder { background: rgba(14, 165, 233, 0.2); color: #38bdf8; border: 1px solid rgba(14,165,233,0.3); }
+
+
+.confidence-meter {
+    margin-bottom: 30px;
+}
+
+.confidence-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    color: #e4e4e7;
+    margin-bottom: 8px;
+}
+
+.track {
+    width: 100%;
+    height: 12px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #4facfe, #00f2fe);
+    border-radius: 6px;
+    transition: width 1s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* Match fill color to tag */
+.fill-normal { background: linear-gradient(90deg, #22c55e, #4ade80); }
+.fill-depression { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
+.fill-suicidal { background: linear-gradient(90deg, #ef4444, #f87171); }
+.fill-anxiety { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+.fill-bipolar { background: linear-gradient(90deg, #a855f7, #c084fc); }
+.fill-stress { background: linear-gradient(90deg, #ec4899, #f472b6); }
+.fill-personality-disorder { background: linear-gradient(90deg, #0ea5e9, #38bdf8); }
+
+
+.detailed-scores h3 {
+    font-size: 1rem;
+    color: #a1a1aa;
+    margin-bottom: 12px;
+    font-weight: 500;
+}
+
+.score-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.score-list li {
+    display: grid;
+    grid-template-columns: 140px 1fr 40px;
+    align-items: center;
+    gap: 12px;
+    font-size: 0.85rem;
+}
+
+.score-label {
+    color: #cbd5e1;
+}
+
+.score-bar-wrapper {
+    height: 6px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.score-bar {
+    height: 100%;
+    background: #64748b;
+    border-radius: 3px;
+}
+
+.score-value {
+    color: #94a3b8;
+    text-align: right;
+}
+
+.disclaimer {
+    margin-top: 30px;
+    font-size: 0.75rem;
+    color: #71717a;
+    text-align: center;
+    font-style: italic;
+}
+
+/* Micro-interactions */
+.textarea-wrapper::after {
+    content: '';
+    position: absolute;
+    bottom: -1px; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(to right, transparent, #4facfe, transparent);
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+}
+
+textarea:focus + .textarea-wrapper::after {
+    transform: scaleX(1);
+}
