@@ -14,4 +14,23 @@ The project compared multiple modeling paradigms—**TF-IDF + SVM**, **Word2Vec 
 
 ## Deployment
 
-The successful **MentalBERT** model was deployed via a complete **Flask web application**. Using HTML, CSS, and JS, a beautiful frontend interface was constructed for the model. Users may now type sentences reflecting different emotional or psychological states into the frontend and get an accurate mental health tag returned in real-time.
+The successful **MentalBERT** model was deployed via a complete **Flask web application**. Users may now type sentences reflecting different emotional or psychological states into the frontend and get an accurate mental health tag returned in real-time.
+The interface allows users to quickly test the model with natural language inputs while the backend processes the text using the trained MentalBERT classifier.
+
+Web Application Interface:
+
+<p align="center">
+<img width="673" height="904" alt="image" src="https://github.com/user-attachments/assets/9790929e-65c7-48e6-8847-f0ff5d03e136" />
+</p>
+Example of the MindScope AI web interface where users input text and receive mental health classification results.
+
+In the example above, the user enters the sentence:
+
+> "I just feel completely empty. I don't see the point in waking up anymore."
+
+The **MentalBERT model** analyzes the text and classifies it as **Suicidal** with a **confidence score of 99.7%**.  
+The interface displays the predicted label, the model’s confidence score, and a probability breakdown across all supported classes (*Suicidal, Personality Disorder, Stress, Bipolar, Normal, Depression, Anxiety*).
+
+This visualization helps users quickly understand how the model interprets emotional cues in the input text.
+
+> **Disclaimer:** This tool is for research and demonstration purposes only and does not replace professional medical advice.
