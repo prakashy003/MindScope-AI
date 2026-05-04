@@ -37,10 +37,45 @@ This visualization helps users quickly understand how the model interprets emoti
 
 ---
 
-## Future Plans — LLM Benchmark Extension
+## LLM Benchmark — Findings
 
-The next planned extension is a **zero-shot LLM benchmark** that directly compares the fine-tuned MentalBERT model against general-purpose large language models (Claude and GPT) on the same labeled test set.
+To push the project further, MentalBERT was benchmarked against **Claude Haiku** and **GPT-4o-mini** across three prompt strategies (zero-shot, few-shot, chain-of-thought) on the same 251-row stratified test set used during training evaluation.
 
-The benchmark will evaluate three prompt engineering strategies — zero-shot, few-shot, and chain-of-thought — across two cost-efficient models (`claude-haiku-4-5` and `gpt-4o-mini`). Each run will be measured on accuracy, macro F1, per-class F1 (with special attention to minority classes like Personality Disorder), latency, and cost per 1,000 predictions.
+<p align="center">
+<img src="llm_benchmark/results/macro_f1_comparison.png" alt="Macro F1 Comparison" width="750"/>
+</p>
 
-The goal is to answer a concrete question: *does a domain-adapted fine-tuned model outperform a general-purpose LLM on mental health text classification — especially on rare, clinically significant labels?* The findings will be documented in a comparison table and a short write-up covering trade-offs between model type, prompt strategy, accuracy, and inference cost.
+| Model | Strategy | Accuracy | Macro F1 | F1 — Personality Disorder |
+|---|---|---|---|---|
+| **MentalBERT (fine-tuned)** | — | **84.2%** | **0.838** | **0.830** |
+| Claude Haiku | few-shot | 65.3% | 0.634 | 0.409 |
+| GPT-4o-mini | few-shot | 63.3% | 0.610 | 0.375 |
+| Claude Haiku | zero-shot | 59.8% | 0.576 | 0.263 |
+| GPT-4o-mini | CoT | 59.4% | 0.579 | 0.293 |
+| Claude Haiku | CoT | 41.0% | 0.341 | 0.000 |
+
+**Key findings:**
+- MentalBERT leads by **20 macro F1 points** over the best LLM strategy
+- The gap is sharpest on **Personality Disorder** — MentalBERT 0.83 vs best LLM 0.41. General-purpose models struggle most on rare, clinically specific classes
+- **Chain-of-thought backfired on Claude** — reasoning step-by-step dropped macro F1 from 0.576 to 0.341, showing CoT can hurt on subjective classification tasks
+- GPT-4o-mini zero-shot costs **5× less** than Claude Haiku at comparable accuracy — a relevant cost trade-off for production use
+
+Full per-class breakdown and visualizations are in [`llm_benchmark/evaluate.ipynb`](llm_benchmark/evaluate.ipynb).
+
+---
+
+## Why MentalBERT Outperformed Every Approach
+
+Across all four paradigms tested — traditional ML, word embeddings, Claude, and GPT — MentalBERT consistently ranked first. The reason comes down to one concept: **domain adaptation**.
+
+- **TF-IDF + SVM (F1: 0.71)** treats text as a bag of words with no understanding of order or meaning. It can separate broad categories but collapses on classes like Stress and Personality Disorder where the vocabulary overlaps heavily.
+
+- **Word2Vec + LSTM (F1: 0.69)** learns word relationships and sequence patterns, but its embeddings were trained on general text (Google News), not mental health language. It captures sentence flow but misses domain-specific emotional nuance.
+
+- **Claude Haiku & GPT-4o-mini (best F1: 0.634)** are powerful general reasoners trained on broad internet data. They perform well on obvious cases — Anxiety and Suicidal — but have never seen the specific linguistic patterns of Reddit mental health communities. Without fine-tuning, they cannot reliably distinguish Stress from Depression, or recognize the indirect language typical of Personality Disorder posts.
+
+- **MentalBERT (F1: 0.838)** starts from BERT pre-trained specifically on mental health corpora, then is fine-tuned directly on this dataset's labeled examples. It has seen the exact style of language users express mental health states in, making it sensitive to subtle cues that general models miss entirely.
+
+The takeaway: **domain-adapted fine-tuning beats prompt engineering**. For specialized, high-stakes classification tasks, a smaller model trained on the right data consistently outperforms a larger general model given only a prompt.
+
+> **Disclaimer:** This tool is for research and demonstration purposes only and does not replace professional medical advice.
