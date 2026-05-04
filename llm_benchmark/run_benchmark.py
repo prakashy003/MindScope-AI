@@ -8,6 +8,7 @@ Usage:
 """
 
 import os
+import sys
 import json
 import time
 import argparse
@@ -15,6 +16,9 @@ import pandas as pd
 import anthropic
 import openai
 from dotenv import load_dotenv
+
+# Ensure project root is on the path when running as a script
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), "..", ".env"), override=False)
 
@@ -79,7 +83,7 @@ def call_claude(prompt: str, is_cot: bool) -> tuple[str, str, float]:
             t0 = time.time()
             response = client.messages.create(
                 model=CLAUDE_MODEL,
-                max_tokens=256 if is_cot else 16,
+                max_tokens=600 if is_cot else 16,
                 messages=[{"role": "user", "content": prompt}],
             )
             latency = time.time() - t0
@@ -106,7 +110,7 @@ def call_gpt(prompt: str, is_cot: bool) -> tuple[str, str, float]:
             t0 = time.time()
             response = client.chat.completions.create(
                 model=GPT_MODEL,
-                max_tokens=256 if is_cot else 16,
+                max_tokens=600 if is_cot else 16,
                 messages=[{"role": "user", "content": prompt}],
             )
             latency = time.time() - t0
