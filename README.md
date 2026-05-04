@@ -34,3 +34,13 @@ The interface displays the predicted label, the model’s confidence score, and 
 This visualization helps users quickly understand how the model interprets emotional cues in the input text.
 
 > **Disclaimer:** This tool is for research and demonstration purposes only and does not replace professional medical advice.
+
+---
+
+## Future Plans — LLM Benchmark Extension
+
+The next planned extension is a **zero-shot LLM benchmark** that directly compares the fine-tuned MentalBERT model against general-purpose large language models (Claude and GPT) on the same labeled test set.
+
+The benchmark will evaluate three prompt engineering strategies — zero-shot, few-shot, and chain-of-thought — across two cost-efficient models (`claude-haiku-4-5` and `gpt-4o-mini`). Each run will be measured on accuracy, macro F1, per-class F1 (with special attention to minority classes like Personality Disorder), latency, and cost per 1,000 predictions.
+
+The goal is to answer a concrete question: *does a domain-adapted fine-tuned model outperform a general-purpose LLM on mental health text classification — especially on rare, clinically significant labels?* The findings will be documented in a comparison table and a short write-up covering trade-offs between model type, prompt strategy, accuracy, and inference cost.
