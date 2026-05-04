@@ -1,4 +1,4 @@
-# MindScope AI
+# MindScope AI — Mental Health NLP Classification & LLM Benchmark
 
 ## Overview
 **MindScope AI** is an NLP-based system designed to detect and classify mental health conditions from text inputs.  
