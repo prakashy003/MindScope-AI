@@ -1,0 +1,25 @@
+# Secrets — never commit these
+.env
+secrets.txt
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+*.egg-info/
+
+# Models (large binary files)
+models/*.pt
+models/*.bin
+
+# Jupyter
+.ipynb_checkpoints/
+notebooks/.ipynb_checkpoints/
+
+# macOS
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
